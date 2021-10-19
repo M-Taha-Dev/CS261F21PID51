@@ -29,7 +29,7 @@ def extract_data(item):
     result = (company,model,description,price,rating,reviews,link)
     return result
 driver = webdriver.Chrome(executable_path='C:\\Program Files\\Google\\Chrome\\chromedriver.exe')
-url = getUrl('gaming gpus')
+url = getUrl('ssd')
 item_list = []
 for page in range(1,21):
     pg = url.format(page)

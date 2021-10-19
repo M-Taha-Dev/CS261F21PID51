@@ -23,15 +23,13 @@ def get_product_details(item):
     return (company,model,description,price,rating,reviews,href)
 data1 = []
 for page in range(1,102):
-    url = get_url('gaming laptops')
+    url = get_url('samsung phones')
     url = url.format(page)
     print(url)
     driver.get(url)
     soup = BeautifulSoup(driver.page_source,'html.parser')
     results = soup.find_all('div',{'class':'c2prKC'})
     for item in results:
-        href = item.find('div',{'class':'cRjKsc'}).a.get('href')
-        print(href[0])
         a = get_product_details(item)
         data1.append(a)
 with open('data.csv','a',newline='', encoding='utf-8') as file:
