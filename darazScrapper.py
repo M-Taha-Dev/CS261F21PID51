@@ -22,17 +22,19 @@ def get_product_details(item):
         rating = ''
     return (company,model,description,price,rating,reviews,href)
 data1 = []
-for page in range(1,102):
-    url = get_url('samsung phones')
-    url = url.format(page)
-    print(url)
-    driver.get(url)
-    soup = BeautifulSoup(driver.page_source,'html.parser')
-    results = soup.find_all('div',{'class':'c2prKC'})
-    for item in results:
-        a = get_product_details(item)
-        data1.append(a)
-with open('data.csv','a',newline='', encoding='utf-8') as file:
-    writer = csv.writer(file)
-    writer.writerow(['Manufacturer','Model','Description','Price','Rating','no. of reviews','url'])
-    writer.writerows(data1)
+listofitems = ['apple watch','hp omen','dell inspiron','dell xps','redmagic phones','realme phones','razor laptops','hp elitebook','probooks','chromebooks','ipods','airpods max','imac','air cooler for cpus','phone cases','laptop bags','wireless keyboards','computer adapters','usb hub','laptop covers','selfie sticks','s21 ultra','note 20 ultra','mac mini','android tablets']
+for items in listofitems:
+    for page in range(1,102):
+        url = get_url(items)
+        url = url.format(page)
+        print(url)
+        driver.get(url)
+        soup = BeautifulSoup(driver.page_source,'html.parser')
+        results = soup.find_all('div',{'class':'c2prKC'})
+        for item in results:
+            a = get_product_details(item)
+            data1.append(a)
+    with open('data.csv','a',newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Manufacturer','Model','Description','Price','Rating','no. of reviews','url'])
+        writer.writerows(data1)
