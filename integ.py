@@ -339,8 +339,15 @@ class Ui_G51Project(object):
     def TimSort(self, array):
         pass
 
-    def SelectionSort(self, array):
-        pass
+    def SelectionSort(self, Array):
+
+        for i in range(0, len(Array)):
+            min_val_index = i
+            for j in range(i+1, len(Array)):
+                if(Array[j][1] < Array[min_index][1]):
+                    min_val_index = j
+            Array[i], Array[min_val_index] = Array[min_val_index], Array[i]
+        return Array
 
     def RadixSort(self, array):
         pass
