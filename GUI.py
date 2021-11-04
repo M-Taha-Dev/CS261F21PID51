@@ -5,6 +5,7 @@
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
+from typing import ItemsView
 from bs4 import BeautifulSoup
 import time
 import sys
@@ -96,7 +97,7 @@ class Ui_G51Project(object):
         self.dataTable.setHorizontalHeaderItem(5, item)
         item = QtWidgets.QTableWidgetItem()
         self.dataTable.setHorizontalHeaderItem(6, item)
-       # self.increasingRadioButton = QtWidgets.QRadioButton(self.centralwidget)
+        #self.increasingRadioButton = QtWidgets.QRadioButton(self.centralwidget)
         #self.increasingRadioButton.setGeometry(QtCore.QRect(110, 140, 95, 20))
         # self.increasingRadioButton.setObjectName("increasingRadioButton")
         #self.decreasingRadioButton = QtWidgets.QRadioButton(self.centralwidget)
@@ -111,7 +112,6 @@ class Ui_G51Project(object):
         self.FilterButton.raise_()
         self.SortComboBox.raise_()
         self.label.raise_()
-
         self.SelectComboBox.raise_()
         self.label_2.raise_()
         self.SearchButton.raise_()
@@ -155,8 +155,6 @@ class Ui_G51Project(object):
         self.retranslateUi(G51Project)
         # self.SortComboBox.setCurrentIndex(-1)
         # self.increasingRadioButton.setChecked(True)
-        # self.increasingRadioButton.clicked.connect(self.printTable)
-        # self.decreasingRadioButton.clicked.connect(self.printTable)
 
         QtCore.QMetaObject.connectSlotsByName(G51Project)
 
@@ -195,7 +193,168 @@ class Ui_G51Project(object):
         # self.SortComboBox.activated.connect(self.comboFix)
         self.SearchButton.clicked.connect(self.searchFunction)
         self.StopButton.clicked.connect(self.stopFeature)
+        # self.increasingRadioButton.clicked.connect(self.inc_dec_table)
+        # self.decreasingRadioButton.clicked.connect(self.inc_dec_table)
         ############################################################################
+
+    def inc_dec_table(self):
+        if self.decreasingRadioButton.isChecked():
+            # print('checked')
+            size = self.dataTable.rowCount()
+            myTable = []
+            for i in range(size):
+                tuple = (self.dataTable.item(i, 0).text(), self.dataTable.item(i, 1).text(), self.dataTable.item(i, 2).text(), self.dataTable.item(
+                    i, 3).text(), self.dataTable.item(i, 4).text(), self.dataTable.item(i, 5).text(), self.dataTable.item(i, 6).text())
+                myTable.append(tuple)
+            self.dataTable.clearContents()
+            self.dataTable.clearFocus()
+            for i in reversed(range(size)):
+                try:
+                    item = myTable[i]
+                    for col in range(7):
+                        item_child = item[col]
+                        self.dataTable.setItem(
+                            i, col, QtWidgets.QTableWidgetItem(item_child))
+                except:
+                    print("while arranging the table")
+            self.dataTable.clearFocus()
+
+    def multi_level_sorting(self):
+        size = self.dataTable.rowCount()
+        myTable = []
+
+        for i in range(size):
+            tuple = (self.dataTable.item(i, 0).text(), self.dataTable.item(i, 1).text(), self.dataTable.item(i, 2).text(), self.dataTable.item(
+                i, 3).text(), self.dataTable.item(i, 4).text(), self.dataTable.item(i, 5).text(), self.dataTable.item(i, 6).text())
+            myTable.append(tuple)
+        if self.SelectComboBox.currentText() == 'Multi Level Sort':
+
+            pass
+
+    def helper_for_muti_sort(self, attribute):
+        # print(item_selected)
+        wrong_indexes = []
+        index = [[], []]
+        indexRating = [[], []]
+        ratingArray = []
+        companyBucket = [[], []]
+        companyArray = []
+        descriptionBucket = [[], []]
+        descriptionArray = []
+        reviewBucket = [[], []]
+        reviewArray = []
+        urlBucket = [[], []]
+        urlArray = []
+        modelBucket = [[], []]
+        modelArray = []
+        count = 0
+        # print(item_selected)
+        array = []
+        for item in self.itemList:
+            # print(item_selected)
+            try:
+                ###########         Model           #####################
+                md = item[1]
+                md = md.upper()
+                modelBucket[0].append(count)
+                modelBucket[1].append(md)
+                modelArray.append(modelBucket)
+                modelBucket = [[], []]
+                ############    URL         ############################
+                url = item[6]
+                urlBucket[0].append(count)
+                urlBucket[1].append(url)
+                urlArray.append(url)
+                urlBucket = [[], []]
+                ###############         No of reviews       ########################
+                rw = item[5]
+                rw = rw.replace(',', "")
+                rw = int(rw)
+                reviewBucket[0].append(count)
+                reviewBucket[1].append(rw)
+                reviewArray.append(reviewBucket)
+                reviewBucket = [[], []]
+                ####################        Description         ##########################
+                ds = item[2]
+                descriptionBucket[0].append(count)
+                ds = ds.upper()
+                descriptionBucket[1].append(ds)
+                descriptionArray.append(descriptionBucket)
+                descriptionBucket = [[], []]
+                #######     for rating     ###############
+                rt = item[4]
+                # print("rating " + str(rt))
+                rt = str(rt)
+                rt = rt.split(' ')
+                rt = rt[0]
+                rt = float(rt)
+                # print("rt  = " + str(rt))
+                indexRating[0].append(count)
+                indexRating[1].append(rt)
+                ratingArray.append(indexRating)
+                indexRating = [[], []]
+                ###################     company     ######################
+                cp = item[0]
+                cp = cp.upper()
+                companyBucket[0].append(count)
+                companyBucket[1].append(cp)
+                companyArray.append(companyBucket)
+                companyBucket = [[], []]
+                ###############        for Price    ####################
+                pr = item[3]
+                # print(pr)
+                pr = pr.replace("$", "")
+                # print(pr)
+                pr = pr.replace(" ", "")
+                pr = pr.replace(",", "")
+                # print(pr)
+                p = math.ceil(float(pr))
+                # print(item_selected)
+                index[1].append(p)
+                array.append(index)
+                index[0].append(count)
+                index = [[], []]
+                tuple = (count, p)
+                ########################################################
+                count = count + 1
+            except:
+                wrong_indexes.append(count)
+        if attribute == 'Price':
+            thread = threading.Thread(
+                target=self.SortAttribute, args=(array, wrong_indexes,))
+            # self.SortAttribute(array, wrong_indexes)
+            thread.start()
+        elif attribute == 'Manufacturer':
+            thread = threading.Thread(
+                target=self.SortAttribute, args=(companyArray, wrong_indexes,))
+            thread.start()
+            # self.SortAttribute(companyArray, wrong_indexes)
+        elif attribute == 'Description':
+            thread = threading.Thread(target=self.SortAttribute, args=(
+                descriptionArray, wrong_indexes,))
+            thread.start()
+            # self.SortAttribute(descriptionArray, wrong_indexes)
+        elif attribute == 'Rating':
+            thread = threading.Thread(
+                target=self.SortAttribute, args=(ratingArray, wrong_indexes,))
+            thread.start()
+            # self.SortAttribute(ratingArray, wrong_indexes)
+        elif attribute == 'URL':
+            # self.SortAttribute(urlArray, wrong_indexes)
+            thread = threading.Thread(
+                target=self.SortAttribute, args=(urlArray, wrong_indexes,))
+            thread.start()
+
+        elif attribute == 'No. of reviews':
+            # self.SortAttribute(reviewArray, wrong_indexes)
+            thread = threading.Thread(
+                target=self.SortAttribute, args=(reviewArray, wrong_indexes,))
+            thread.start()
+
+        elif attribute == 'Model':
+            thread = threading.Thread(
+                target=self.SortAttribute, args=(modelArray, wrong_indexes,))
+            thread.start()
 
     def stopFeature(self):
         self.cancel = True
@@ -207,23 +366,74 @@ class Ui_G51Project(object):
         self.pause = False
 
     def searchFunction(self):
+        self.cancel = False
+        self.pause = False
         text = self.SearchField.text()
-        print('before :  ' + str(text))
+        #print('before :  ' + str(text))
         t = text.split(' ')[0]
-        print("after :   " + str(t))
+        #print("after :   " + str(t))
         t = t.casefold()
         if t == 'scrap':
-            print("in if sattement")
+            #print("in if sattement")
             self.ProgressBarControl()
         else:
-
+            self.findFilter(text)
             pass
 
-    def findFilter(self):
-        lst = self.printTable
-        count = 0
-        selected_row = []
-        for row in lst:
+    def findFilter(self, text):
+        table = []
+        #print('before loop')
+        myTable = []
+        if self.SearchButton.text() == 'Search':
+            for i in range(0, self.dataTable.rowCount()):
+                table.append(self.dataTable.item(
+                    i, 2).text() + self.dataTable.item(i, 3).text() + self.dataTable.item(i, 4).text() + self.dataTable.item(i, 5).text())
+            #print('after loop')
+            count = 0
+            # "".__contains__()
+            select_row = []
+            for s in table:
+                if s.__contains__(text):
+                    select_row.append(count)
+                count = count + 1
+            #print("select row: " + str(select_row))
+            size = self.dataTable.rowCount()
+            for i in range(size):
+                tuple = (self.dataTable.item(i, 0).text(), self.dataTable.item(i, 1).text(), self.dataTable.item(i, 2).text(), self.dataTable.item(
+                    i, 3).text(), self.dataTable.item(i, 4).text(), self.dataTable.item(i, 5).text(), self.dataTable.item(i, 6).text())
+                myTable.append(tuple)
+            self.printTable = myTable
+            myTable = []
+            for i in select_row:
+                tuple = (self.dataTable.item(i, 0).text(), self.dataTable.item(i, 1).text(), self.dataTable.item(i, 2).text(), self.dataTable.item(
+                    i, 3).text(), self.dataTable.item(i, 4).text(), self.dataTable.item(i, 5).text(), self.dataTable.item(i, 6).text())
+                myTable.append(tuple)
+            # self.dataTable.setSelectionMode(QtGui.QAbstractTextDocumentLayout)
+            # table.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+            self.dataTable.clearContents()
+            for i in range(len(select_row)):
+                try:
+                    item = myTable[i]
+                    for col in range(7):
+                        item_child = item[col]
+                        self.dataTable.setItem(
+                            i, col, QtWidgets.QTableWidgetItem(item_child))
+                except:
+                    print("error while filterign the file")
+            self.SearchButton.setText('Back')
+        else:
+            myTable = self.printTable
+            #print("lenght of array: " + str(len(myTable)))
+            for i in range(len(myTable)):
+                try:
+                    item = myTable[i]
+                    for col in range(7):
+                        item_child = item[col]
+                        self.dataTable.setItem(
+                            i, col, QtWidgets.QTableWidgetItem(item_child))
+                except:
+                    print("error while filterign the file")
+            self.SearchButton.setText("Search")
 
     def AScrapper(self):
         try:
@@ -231,19 +441,21 @@ class Ui_G51Project(object):
                 executable_path='C:\\Program Files\\Google\\Chrome\\chromedriver.exe')
         # listofitems = ['dell laptops', 'hp laptops', 'lenovo laptops',
             #               'gaming phones', 'smart watches', 'mechanical keyboards', 'adapters', 'gaming mouse', 'gaming chairs', 'xbox accessories', 'playstation accessories', 'moniters', 'asus phones', 'rbg accessories']
-            #['gaming mouse','gaming chairs','xbox accessories','playstation accessories','moniters','asus phones','rbg accessories']
-            #['dell laptops','hp laptops','lenovo laptops','gaming phones','smart watches','mechanical keyboards','adapters']
+            # ['gaming mouse','gaming chairs','xbox accessories','playstation accessories','moniters','asus phones','rbg accessories']
+            # ['dell laptops','hp laptops','lenovo laptops','gaming phones','smart watches','mechanical keyboards','adapters']
             items = self.SearchField.text()
             items = items.replace('scrap', '')
             print(items)
             url = self.getUrl(items)
             item_list = []
             for page in range(1, 21):
-                if self.cancel == True:
-                    break
                 while self.pause == True:
                     if self.cancel == True:
                         break
+                if self.cancel == True:
+                    v = 0
+                    # self.progressBar.setValue(v)
+                    break
                 self.progressBar.setValue(page*5)
 
                 pg = url.format(page)
@@ -256,16 +468,25 @@ class Ui_G51Project(object):
                     extracted_data = self.extract_data(item)
                     if extracted_data:
                         item_list.append(extracted_data)
-            print("before saving")
+                    # Thread1 = threading.Thread(target=self.saveToCSV,args=(item_list,))
+            self.itemList = item_list
             self.saveToCSV(item_list)
+            itemList = self.readFromCSV()
+            self.populateSearchTable(itemList)
+
+            # Thread2 = threading.Thread(target=self.readFromCSV,args=())
+            # Thread3 = threading.Thread(target=self.populateSearchTable,args=(lst))
+            # lst = self.readFromCSV()
+            # self.populateSearchTable(lst)
+            #print("before saving")
+            # self.printTable = item_list
             driver.close()
-            lst = self.readFromCSV()
-            print('after reading')
-            self.populateSearchTable(lst)
+
+            #print('after reading')
             # self.progressBar.setValue(0)
         except:
             lst = self.readFromCSV()
-            print('after reading')
+            #print('after reading')
             self.populateSearchTable(lst)
             # self.progressBar.setValue(0)
             pass
@@ -274,7 +495,7 @@ class Ui_G51Project(object):
 
     def saveToCSV(self, item_list):
         try:
-            with open('Mydata.csv', 'a', newline='', encoding='utf-8') as file:
+            with open('Mydata.csv', 'w', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
                 writer.writerow(['Manufacturer', 'Model', 'Description',
                                 'Price', 'Rating', 'no. of reviews', 'url'])
@@ -290,11 +511,11 @@ class Ui_G51Project(object):
                 reader = csv.reader(file)
                 for row in reader:
                     Manufacturer = row[0]
-                    #Manufacturer = re.sub(r'[^A-Za-z0-9 ]+', '', Manufacturer)
+                    # Manufacturer = re.sub(r'[^A-Za-z0-9 ]+', '', Manufacturer)
                     Model = row[1]
-                    #Model = re.sub(r'[^A-Za-z0-9 ]+', '', Model)
+                    # Model = re.sub(r'[^A-Za-z0-9 ]+', '', Model)
                     Description = row[2]
-                    #Description = re.sub(r'[^A-Za-z0-9 ]+', '', Description)
+                    # Description = re.sub(r'[^A-Za-z0-9 ]+', '', Description)
                     Price = row[3]
                     Rating = row[4]
                     review_count = row[5]
@@ -312,18 +533,19 @@ class Ui_G51Project(object):
 
     def populateSearchTable(self, item_list):
         try:
-            item_list = item_list[1:]
-            self.itemList = item_list
+            # self.itemList = item_list
             size = len(item_list)
             self.dataTable.setRowCount(size)
-            for rows in range(0, len(item_list)):
+            # rowCount = self.dataTable.rowCount()
+            # right = len(item_list) + rowCount
+            for rows in range(0, size):
                 item = item_list[rows]
                 for col in range(7):
                     item_child = item[col]
                     self.dataTable.setItem(
                         rows, col, QtWidgets.QTableWidgetItem(item_child))
         except:
-            print("Error while importing the file")
+            print("Error while printing the file")
 
     def getUrl(self, item):
         template = 'https://www.amazon.com/s?k={}'
@@ -355,6 +577,7 @@ class Ui_G51Project(object):
 
         result = (company, model, description,
                   price, rating, reviews, link)
+        # print(result)
         return result
 
     def ProgressBarControl(self):
@@ -383,9 +606,9 @@ class Ui_G51Project(object):
                 reader = csv.reader(file)
                 for row in reader:
                     Manufacturer = row[0]
-                    #Manufacturer = re.sub(r'[^ \w+]', '', Manufacturer)
+                    # Manufacturer = re.sub(r'[^ \w+]', '', Manufacturer)
                     Model = row[1]
-                    #Model = re.sub(r'[^ \w+]', '', Model)
+                    # Model = re.sub(r'[^ \w+]', '', Model)
                     Description = row[2]
                     Description = re.sub(r'[^ \w+]', '', Description)
                     Price = row[3]
@@ -394,6 +617,7 @@ class Ui_G51Project(object):
                     url = row[6]
                     arr = (Manufacturer, Model, Description,
                            Price, Rating, review_count, url)
+
                     item_list.append(arr)
             return item_list
         except FileNotFoundError:
@@ -404,7 +628,7 @@ class Ui_G51Project(object):
         data = self.itemList
         path = self.ExportField.text()
         path = path.replace('\\', '\\\\')
-        print(path)
+        # print(path)
         try:
             with open(path, 'w', newline="", encoding='utf-8') as file:
                 writer = csv.writer(file)
@@ -412,7 +636,7 @@ class Ui_G51Project(object):
             file.close()
         except:
             print("error while exporting the file")
-    """#######################################          Count Sort          ##########################################
+    """  # Count Sort          ##########################################
 
     def countSort(self, array):
         for i in range(len(array)):
@@ -497,8 +721,9 @@ class Ui_G51Project(object):
                     item_child = item[col]
                     self.dataTable.setItem(
                         rows, col, QtWidgets.QTableWidgetItem(item_child))
+            self.dataTable.clearFocus()
         except:
-            print("Error while importing the file")
+            print("Your csv file may contain some characters that utf-8 can't decode \n please use a valid csv file")
 
     def insertionSort(self, array):
 
@@ -647,7 +872,7 @@ class Ui_G51Project(object):
 
     def checkFilter(self):
         item_selected = self.SelectComboBox.currentText()
-        print(item_selected)
+        # print(item_selected)
         wrong_indexes = []
         index = [[], []]
         indexRating = [[], []]
@@ -663,7 +888,7 @@ class Ui_G51Project(object):
         modelBucket = [[], []]
         modelArray = []
         count = 0
-        print(item_selected)
+        # print(item_selected)
         array = []
         for item in self.itemList:
             # print(item_selected)
@@ -698,12 +923,12 @@ class Ui_G51Project(object):
                 descriptionBucket = [[], []]
                 #######     for rating     ###############
                 rt = item[4]
-                #print("rating " + str(rt))
+                # print("rating " + str(rt))
                 rt = str(rt)
                 rt = rt.split(' ')
                 rt = rt[0]
                 rt = float(rt)
-                #print("rt  = " + str(rt))
+                # print("rt  = " + str(rt))
                 indexRating[0].append(count)
                 indexRating[1].append(rt)
                 ratingArray.append(indexRating)
@@ -737,47 +962,42 @@ class Ui_G51Project(object):
         attribute = self.SelectComboBox.currentText()
         if attribute == 'Price':
             thread = threading.Thread(
-                target=self.sortPrice, args=(array, wrong_indexes,))
-            #self.sortPrice(array, wrong_indexes)
+                target=self.SortAttribute, args=(array, wrong_indexes,))
+            # self.SortAttribute(array, wrong_indexes)
             thread.start()
         elif attribute == 'Manufacturer':
             thread = threading.Thread(
-                target=self.sortPrice, args=(companyArray, wrong_indexes,))
+                target=self.SortAttribute, args=(companyArray, wrong_indexes,))
             thread.start()
-            #self.sortPrice(companyArray, wrong_indexes)
+            # self.SortAttribute(companyArray, wrong_indexes)
         elif attribute == 'Description':
-            thread = threading.Thread(target=self.sortPrice, args=(
+            thread = threading.Thread(target=self.SortAttribute, args=(
                 descriptionArray, wrong_indexes,))
             thread.start()
-            #self.sortPrice(descriptionArray, wrong_indexes)
+            # self.SortAttribute(descriptionArray, wrong_indexes)
         elif attribute == 'Rating':
             thread = threading.Thread(
-                target=self.sortPrice, args=(ratingArray, wrong_indexes,))
+                target=self.SortAttribute, args=(ratingArray, wrong_indexes,))
             thread.start()
-            #self.sortPrice(ratingArray, wrong_indexes)
+            # self.SortAttribute(ratingArray, wrong_indexes)
         elif attribute == 'URL':
-            #self.sortPrice(urlArray, wrong_indexes)
+            # self.SortAttribute(urlArray, wrong_indexes)
             thread = threading.Thread(
-                target=self.sortPrice, args=(urlArray, wrong_indexes,))
+                target=self.SortAttribute, args=(urlArray, wrong_indexes,))
             thread.start()
 
         elif attribute == 'No. of reviews':
-            #self.sortPrice(reviewArray, wrong_indexes)
+            # self.SortAttribute(reviewArray, wrong_indexes)
             thread = threading.Thread(
-                target=self.sortPrice, args=(reviewArray, wrong_indexes,))
+                target=self.SortAttribute, args=(reviewArray, wrong_indexes,))
             thread.start()
 
         elif attribute == 'Model':
             thread = threading.Thread(
-                target=self.sortPrice, args=(modelArray, wrong_indexes,))
+                target=self.SortAttribute, args=(modelArray, wrong_indexes,))
             thread.start()
 
-    def TreeSort(self, array):
-        t = BST()
-        a = t.getSorted(array)
-        return a
-
-    def sortPrice(self, array, wrong_indexes):
+    def SortAttribute(self, array, wrong_indexes):
         sortBy = self.SortComboBox.currentText()
         if sortBy == 'Merge Sort':
             array = self.mergeSort(array)
@@ -803,13 +1023,14 @@ class Ui_G51Project(object):
         self.itemList = item_list
         size = len(item_list)
         self.dataTable.setRowCount(size)
-        print("lenghts: " + str(len(array)) + "   " +
-              str(size) + "          " + str(len(wrong_indexes)))
+        self.dataTable.clearContents()
+        # print("lenghts: " + str(len(array)) + "   " +
+        #     str(size) + "          " + str(len(wrong_indexes)))
         for i in wrong_indexes:
             item_list.pop(i)
-        print("After poping")
-        print("lenghts: " + str(len(array)) + "   " +
-              str(size) + "          " + str(len(wrong_indexes)))
+        #print("After poping")
+        # print("lenghts: " + str(len(array)) + "   " +
+            # str(size) + "          " + str(len(wrong_indexes)))
         for rows in range(0, len(array)):
             index = array[rows][0][0]
             item = item_list[index]
@@ -817,70 +1038,7 @@ class Ui_G51Project(object):
                 item_child = item[col]
                 self.dataTable.setItem(
                     rows, col, QtWidgets.QTableWidgetItem(item_child))
-
-
-class Node:
-    def __init__(self, value):
-        self.value = value
-        self.right = None
-        self.left = None
-        self.parent = None
-
-
-class BST(Node):
-    def __init__(self):
-        self.root = None
-        self.array = []
-    # this function take a value, convert it into node and then insert it in the binary tree
-
-    def insertNode(self, value):
-        item = Node(value)
-        if self.root == None:
-            self.root = Node(item.value)
-        else:
-            current = self.root
-            while True:
-                if item.value[1] > current.value[1]:
-                    if current.right == None:
-                        current.right = Node(item.value)
-                        current.right.parent = current
-                        break
-                    else:
-                        current = current.right
-                elif item.value[1] < current.value[1]:
-                    if current.left == None:
-                        current.left = Node(item.value)
-                        current.left.parent = current
-                        break
-                    else:
-                        current = current.left
-    # this function finds the minimum value of the tree
-
-    def visit(self, node):
-        try:
-            if node.value != None:
-                print("Node: " + str(node.value))
-                self.array.append(node.value)
-        except:
-            print("Node: None")
-    # this is a recursive function for inorder traversal
-
-    def inorder(self, root):
-        try:
-            if root.left != None:
-                self.inorder(root.left)
-            self.visit(root)
-            if root.right != None:
-                self.inorder(root.right)
-        except:
-            return
-
-    def getSorted(self, array):
-        tree = BST()
-        for i in range(len(array)):
-            tree.insertNode(array[i])
-        tree.inorder(tree.root)
-        return self.array
+        self.dataTable.clearFocus()
 
 
 if __name__ == "__main__":
