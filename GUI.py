@@ -5,7 +5,8 @@
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
-from typing import ItemsView
+
+
 from bs4 import BeautifulSoup
 import time
 import sys
@@ -17,6 +18,87 @@ import csv
 import re
 import math
 import threading
+
+
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.right = None
+        self.left = None
+        self.parent = None
+
+
+class BST(Node):
+    def __init__(self):
+        self.root = None
+        self.array = []
+    # this function take a value, convert it into node and then insert it in the binary tree
+
+    def insertNode(self, value):
+        item = Node(value)
+        if self.root == None:
+            self.root = Node(item.value)
+        else:
+            current = self.root
+            while True:
+                if item.value[1] >= current.value[1]:
+                    if current.right == None:
+                        current.right = Node(item.value)
+                        current.right.parent = current
+                        break
+                    else:
+                        current = current.right
+                elif item.value[1] < current.value[1]:
+                    if current.left == None:
+                        current.left = Node(item.value)
+                        current.left.parent = current
+                        break
+                    else:
+                        current = current.left
+    # this function finds the minimum value of the tree
+
+    def visit(self, node):
+        try:
+            if node.value != None:
+                #print("Node: " + str(node.value))
+                self.array.append(node.value)
+        except:
+            print("Node: None")
+    # this is a recursive function for inorder traversal
+
+    def inorder(self, root):
+        try:
+            if root.left != None:
+                self.inorder(root.left)
+            self.visit(root)
+            if root.right != None:
+                self.inorder(root.right)
+        except:
+            return
+
+    def getSorted(self, array):
+        tree = BST()
+        for i in range(len(array)):
+            tree.insertNode(array[i])
+        tree.inorder(tree.root)
+        return self.array
+
+    def fill_array(self, Node):
+        if Node != None:
+            if (Node.left != None):
+                pos = self.fill_array(Node.left)
+
+            global BST_array
+            BST_array.append(Node.value)
+
+            if (Node.right != None):
+                pos = self.fill_array(Node.right)
+
+    def To_Array(self, Node):
+        global BST_array
+        BST_array = []
+        self.fill_array(Node)
+        return BST_array
 
 
 class Ui_G51Project(object):
@@ -97,6 +179,7 @@ class Ui_G51Project(object):
         self.dataTable.setHorizontalHeaderItem(5, item)
         item = QtWidgets.QTableWidgetItem()
         self.dataTable.setHorizontalHeaderItem(6, item)
+
         #self.increasingRadioButton = QtWidgets.QRadioButton(self.centralwidget)
         #self.increasingRadioButton.setGeometry(QtCore.QRect(110, 140, 95, 20))
         # self.increasingRadioButton.setObjectName("increasingRadioButton")
@@ -144,9 +227,9 @@ class Ui_G51Project(object):
         self.menubar.addAction(self.menuMenu.menuAction())
         ######################################
         self.SortComboBox.addItems(['Insertion Sort', "Merge Sort", "Bubble Sort", "Heap Sort",
-                                   "Quick Sort", "Selection Sort"])
+                                   "Quick Sort", "Selection Sort", 'Cocktail Sort', 'Shell Sort', 'Tree Sort'])
         self.SelectComboBox.addItems(
-            ['Manufacturer', 'Model', 'Description', 'Price', 'Rating', 'No. of reviews', 'url'])
+            ['Manufacturer', 'Model', 'Description', 'Price', 'Rating', 'No. of reviews'])
         self.ImportButton.clicked.connect(self.populateDataTable)
         self.ExportButton.clicked.connect(self.exportData)
         self.FilterButton.clicked.connect(self.checkFilter)
@@ -155,7 +238,7 @@ class Ui_G51Project(object):
         self.retranslateUi(G51Project)
         # self.SortComboBox.setCurrentIndex(-1)
         # self.increasingRadioButton.setChecked(True)
-
+        self.SpecifyAttributeField.setVisible(False)
         QtCore.QMetaObject.connectSlotsByName(G51Project)
 
     def retranslateUi(self, G51Project):
@@ -197,165 +280,6 @@ class Ui_G51Project(object):
         # self.decreasingRadioButton.clicked.connect(self.inc_dec_table)
         ############################################################################
 
-    def inc_dec_table(self):
-        if self.decreasingRadioButton.isChecked():
-            # print('checked')
-            size = self.dataTable.rowCount()
-            myTable = []
-            for i in range(size):
-                tuple = (self.dataTable.item(i, 0).text(), self.dataTable.item(i, 1).text(), self.dataTable.item(i, 2).text(), self.dataTable.item(
-                    i, 3).text(), self.dataTable.item(i, 4).text(), self.dataTable.item(i, 5).text(), self.dataTable.item(i, 6).text())
-                myTable.append(tuple)
-            self.dataTable.clearContents()
-            self.dataTable.clearFocus()
-            for i in reversed(range(size)):
-                try:
-                    item = myTable[i]
-                    for col in range(7):
-                        item_child = item[col]
-                        self.dataTable.setItem(
-                            i, col, QtWidgets.QTableWidgetItem(item_child))
-                except:
-                    print("while arranging the table")
-            self.dataTable.clearFocus()
-
-    def multi_level_sorting(self):
-        size = self.dataTable.rowCount()
-        myTable = []
-
-        for i in range(size):
-            tuple = (self.dataTable.item(i, 0).text(), self.dataTable.item(i, 1).text(), self.dataTable.item(i, 2).text(), self.dataTable.item(
-                i, 3).text(), self.dataTable.item(i, 4).text(), self.dataTable.item(i, 5).text(), self.dataTable.item(i, 6).text())
-            myTable.append(tuple)
-        if self.SelectComboBox.currentText() == 'Multi Level Sort':
-
-            pass
-
-    def helper_for_muti_sort(self, attribute):
-        # print(item_selected)
-        wrong_indexes = []
-        index = [[], []]
-        indexRating = [[], []]
-        ratingArray = []
-        companyBucket = [[], []]
-        companyArray = []
-        descriptionBucket = [[], []]
-        descriptionArray = []
-        reviewBucket = [[], []]
-        reviewArray = []
-        urlBucket = [[], []]
-        urlArray = []
-        modelBucket = [[], []]
-        modelArray = []
-        count = 0
-        # print(item_selected)
-        array = []
-        for item in self.itemList:
-            # print(item_selected)
-            try:
-                ###########         Model           #####################
-                md = item[1]
-                md = md.upper()
-                modelBucket[0].append(count)
-                modelBucket[1].append(md)
-                modelArray.append(modelBucket)
-                modelBucket = [[], []]
-                ############    URL         ############################
-                url = item[6]
-                urlBucket[0].append(count)
-                urlBucket[1].append(url)
-                urlArray.append(url)
-                urlBucket = [[], []]
-                ###############         No of reviews       ########################
-                rw = item[5]
-                rw = rw.replace(',', "")
-                rw = int(rw)
-                reviewBucket[0].append(count)
-                reviewBucket[1].append(rw)
-                reviewArray.append(reviewBucket)
-                reviewBucket = [[], []]
-                ####################        Description         ##########################
-                ds = item[2]
-                descriptionBucket[0].append(count)
-                ds = ds.upper()
-                descriptionBucket[1].append(ds)
-                descriptionArray.append(descriptionBucket)
-                descriptionBucket = [[], []]
-                #######     for rating     ###############
-                rt = item[4]
-                # print("rating " + str(rt))
-                rt = str(rt)
-                rt = rt.split(' ')
-                rt = rt[0]
-                rt = float(rt)
-                # print("rt  = " + str(rt))
-                indexRating[0].append(count)
-                indexRating[1].append(rt)
-                ratingArray.append(indexRating)
-                indexRating = [[], []]
-                ###################     company     ######################
-                cp = item[0]
-                cp = cp.upper()
-                companyBucket[0].append(count)
-                companyBucket[1].append(cp)
-                companyArray.append(companyBucket)
-                companyBucket = [[], []]
-                ###############        for Price    ####################
-                pr = item[3]
-                # print(pr)
-                pr = pr.replace("$", "")
-                # print(pr)
-                pr = pr.replace(" ", "")
-                pr = pr.replace(",", "")
-                # print(pr)
-                p = math.ceil(float(pr))
-                # print(item_selected)
-                index[1].append(p)
-                array.append(index)
-                index[0].append(count)
-                index = [[], []]
-                tuple = (count, p)
-                ########################################################
-                count = count + 1
-            except:
-                wrong_indexes.append(count)
-        if attribute == 'Price':
-            thread = threading.Thread(
-                target=self.SortAttribute, args=(array, wrong_indexes,))
-            # self.SortAttribute(array, wrong_indexes)
-            thread.start()
-        elif attribute == 'Manufacturer':
-            thread = threading.Thread(
-                target=self.SortAttribute, args=(companyArray, wrong_indexes,))
-            thread.start()
-            # self.SortAttribute(companyArray, wrong_indexes)
-        elif attribute == 'Description':
-            thread = threading.Thread(target=self.SortAttribute, args=(
-                descriptionArray, wrong_indexes,))
-            thread.start()
-            # self.SortAttribute(descriptionArray, wrong_indexes)
-        elif attribute == 'Rating':
-            thread = threading.Thread(
-                target=self.SortAttribute, args=(ratingArray, wrong_indexes,))
-            thread.start()
-            # self.SortAttribute(ratingArray, wrong_indexes)
-        elif attribute == 'URL':
-            # self.SortAttribute(urlArray, wrong_indexes)
-            thread = threading.Thread(
-                target=self.SortAttribute, args=(urlArray, wrong_indexes,))
-            thread.start()
-
-        elif attribute == 'No. of reviews':
-            # self.SortAttribute(reviewArray, wrong_indexes)
-            thread = threading.Thread(
-                target=self.SortAttribute, args=(reviewArray, wrong_indexes,))
-            thread.start()
-
-        elif attribute == 'Model':
-            thread = threading.Thread(
-                target=self.SortAttribute, args=(modelArray, wrong_indexes,))
-            thread.start()
-
     def stopFeature(self):
         self.cancel = True
 
@@ -374,6 +298,7 @@ class Ui_G51Project(object):
         #print("after :   " + str(t))
         t = t.casefold()
         if t == 'scrap':
+            self.SearchButton.setText('Search')
             #print("in if sattement")
             self.ProgressBarControl()
         else:
@@ -624,8 +549,21 @@ class Ui_G51Project(object):
             print("File was not found!")
             return None
 
+    def getTableData(self):
+        size = self.dataTable.rowCount()
+        myTable = []
+        for i in range(size):
+            try:
+                tuple = (self.dataTable.item(i, 0).text(), self.dataTable.item(i, 1).text(), self.dataTable.item(i, 2).text(), self.dataTable.item(
+                    i, 3).text(), self.dataTable.item(i, 4).text(), self.dataTable.item(i, 5).text(), self.dataTable.item(i, 6).text())
+                myTable.append(tuple)
+
+            except:
+                i = i + 1
+        return myTable
+
     def exportData(self):
-        data = self.itemList
+        data = self.getTableData()
         path = self.ExportField.text()
         path = path.replace('\\', '\\\\')
         # print(path)
@@ -704,6 +642,75 @@ class Ui_G51Project(object):
 
         arr = self.merge(left, right)
         return arr
+#################################           Shell Sort          ##################################
+
+    def Shell_sort(self, array):
+
+        gap = len(array) // 2
+
+        while gap > 0:
+            i = 0
+            j = gap
+
+            while (j < len(array)):
+
+                if (array[i][1] > array[j][1]):
+                    array[i], array[j] = array[j], array[i]
+
+                i = i + 1
+                j = j + 1
+
+                k = i
+                while (k - gap > -1):
+
+                    if array[k - gap][1] > array[k][1]:
+                        array[k-gap], array[k] = array[k], array[k-gap]
+
+                    k = k - 1
+
+            gap = gap // 2
+
+        return array
+
+##########################          CockTail Sort           #################################
+    def cocktail_sort(self, array):
+        swapped = True
+        start = 0
+        end = len(array) - 1
+        while (swapped == True):
+
+            swapped = False
+
+            for i in range(start, end):
+                if (array[i][1] > array[i + 1][1]):
+                    array[i], array[i + 1] = array[i + 1], array[i]
+                    swapped = True
+
+            if (swapped == False):
+                break
+
+            swapped = False
+
+            end = end-1
+
+            for i in range(end-1, start-1, -1):
+                if (array[i][1] > array[i + 1][1]):
+                    array[i], array[i + 1] = array[i + 1], array[i]
+                    swapped = True
+
+            start = start + 1
+
+        return array
+
+    def BinaryTreeSort(self, array):
+        bt = BST()
+        for i in array:
+
+            bt.insertNode(i)
+
+        b = bt.To_Array(bt.root)
+
+        return b
 
     ######################################################
 
@@ -752,9 +759,6 @@ class Ui_G51Project(object):
                 arr[i], arr[j] = arr[j], arr[i]
         arr[i + 1], arr[high] = arr[high], arr[i+1]
         return (i + 1)
-
-    def TimSort(self, array):
-        pass
 
     def SelectionSort(self, Array):
         for i in range(0, len(Array)):
@@ -1013,8 +1017,13 @@ class Ui_G51Project(object):
             array = self.RadixSort(array)
         elif sortBy == 'Bubble Sort':
             array = self.bubbleSort(array)
+        elif sortBy == 'Shell Sort':
+            array = self.Shell_sort(array)
+        elif sortBy == 'Cocktail Sort':
+            array = self.cocktail_sort(array)
         elif sortBy == 'Tree Sort':
-            array = self.TreeSort(array)
+            array = self.BinaryTreeSort(array)
+            # print(array)
         self.dataTable.clearContents()
         item_list = self.importData()
         if item_list == None:
